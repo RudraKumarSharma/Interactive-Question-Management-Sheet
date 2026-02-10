@@ -13,12 +13,6 @@ import {
 } from "recharts";
 import type { Topic } from "@/types/sheet";
 
-const DIFFICULTY_COLORS = {
-  Easy: "hsl(160 84% 39%)",
-  Medium: "hsl(38 92% 50%)",
-  Hard: "hsl(0 84% 60%)",
-};
-
 const PIE_COLORS = ["hsl(16 100% 66%)", "hsl(210 20% 75%)"];
 
 interface StatsChartsProps {
