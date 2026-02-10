@@ -15,10 +15,25 @@ interface QuestionRowProps {
   subTopicId: string;
 }
 
-const difficultyStyles: Record<string, string> = {
-  Easy: "bg-success/15 text-success border-success/20",
-  Medium: "bg-warning/15 text-warning border-warning/20",
-  Hard: "bg-destructive/15 text-destructive border-destructive/20",
+const difficultyStyles: Record<
+  string,
+  { bg: string; text: string; border: string }
+> = {
+  Easy: {
+    bg: "hsl(160 84% 39% / 0.15)",
+    text: "hsl(160 84% 39%)",
+    border: "hsl(160 84% 39% / 0.2)",
+  },
+  Medium: {
+    bg: "hsl(38 92% 50% / 0.15)",
+    text: "hsl(38 92% 50%)",
+    border: "hsl(38 92% 50% / 0.2)",
+  },
+  Hard: {
+    bg: "hsl(0 84% 60% / 0.15)",
+    text: "hsl(0 84% 60%)",
+    border: "hsl(0 84% 60% / 0.2)",
+  },
 };
 
 const QuestionRow = ({
@@ -66,7 +81,12 @@ const QuestionRow = ({
             )}
             <Badge
               variant="outline"
-              className={`text-xs font-medium ${difficultyStyles[question.difficulty]}`}
+              className="text-xs font-medium"
+              style={{
+                backgroundColor: difficultyStyles[question.difficulty].bg,
+                color: difficultyStyles[question.difficulty].text,
+                borderColor: difficultyStyles[question.difficulty].border,
+              }}
             >
               {question.difficulty}
             </Badge>

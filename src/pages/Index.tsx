@@ -1,11 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
-import { Plus, Search, BookOpen } from "lucide-react";
+import { Plus, Search, BookOpen, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSheetStore } from "@/store/sheetStore";
 import TopicSection from "@/components/TopicSection";
 import ItemDialog from "@/components/ItemDialog";
+import StatsCharts from "@/components/StatsChart";
 
 const Index = () => {
   const {
@@ -18,6 +19,83 @@ const Index = () => {
     reorderQuestions,
   } = useSheetStore();
   const [addTopicOpen, setAddTopicOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return document.documentElement.classList.contains("dark");
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    // Inject transition styles on mount
+    const styleId = "theme-transition-styles";
+    let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = styleId;
+      document.head.appendChild(styleElement);
+    }
+
+    styleElement.textContent = `
+      ::view-transition-group(root) {
+        animation-duration: 0.7s;
+        animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      
+      ::view-transition-new(root) {
+        animation-name: reveal-light;
+      }
+
+      ::view-transition-old(root),
+      .dark::view-transition-old(root) {
+        animation: none;
+        z-index: -1;
+      }
+      
+      .dark::view-transition-new(root) {
+        animation-name: reveal-dark;
+      }
+
+      @keyframes reveal-dark {
+        from {
+          clip-path: circle(0% at 50% 50%);
+        }
+        to {
+          clip-path: circle(100% at 50% 50%);
+        }
+      }
+
+      @keyframes reveal-light {
+        from {
+          clip-path: circle(0% at 50% 50%);
+        }
+        to {
+          clip-path: circle(100% at 50% 50%);
+        }
+      }
+    `;
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+
+    const switchTheme = () => {
+      setIsDarkMode(newTheme);
+      if (newTheme) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    };
+
+    // Check if browser supports View Transition API
+    if (typeof document !== "undefined" && "startViewTransition" in document) {
+      (document as any).startViewTransition(switchTheme);
+    } else {
+      switchTheme();
+    }
+  };
 
   const filteredTopics = useMemo(() => {
     if (!searchQuery.trim()) return topics;
@@ -116,6 +194,18 @@ const Index = () => {
                 />
               </div>
               <Button
+                onClick={toggleTheme}
+                size="sm"
+                variant="outline"
+                className="h-9 w-9 p-0 transition-all duration-300 active:scale-95"
+              >
+                {isDarkMode ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
                 onClick={() => setAddTopicOpen(true)}
                 size="sm"
                 className="gap-1.5"
@@ -142,6 +232,9 @@ const Index = () => {
 
       {/* Main content */}
       <main className="container max-w-4xl mx-auto px-4 py-6">
+        {/* Stats Charts */}
+        <StatsCharts topics={topics} />
+
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="topics" type="topic">
             {(provided) => (
