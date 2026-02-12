@@ -13,6 +13,12 @@ import {
 } from "recharts";
 import type { Topic } from "@/types/sheet";
 
+const DIFFICULTY_COLORS = {
+  Easy: "hsl(160 84% 39%)",
+  Medium: "hsl(38 92% 50%)",
+  Hard: "hsl(0 84% 60%)",
+};
+
 const PIE_COLORS = ["hsl(16 100% 66%)", "hsl(210 20% 75%)"];
 
 interface StatsChartsProps {
@@ -213,7 +219,11 @@ const StatsCharts = ({ topics }: StatsChartsProps) => {
                   labelStyle={{ color: "hsl(0 0% 0%)" }}
                   itemStyle={{ color: "hsl(0 0% 0%)" }}
                 />
-                <Bar dataKey="Completed" stackId="a" fill="hsl(16 100% 66%)" />
+                <Bar 
+                  dataKey="Completed" 
+                  stackId="a" 
+                  fill="hsl(16 100% 66%)"
+                />
                 <Bar
                   dataKey="Remaining"
                   stackId="a"
